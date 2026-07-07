@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 verify_template.py)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -v 'without \\\\`streamlit')",
+      "Bash(find /Users/eddy/Documents/miir-routing-assistant -iname \"*.xlsx\" 2>/dev/null; echo \"---\"; find ~/Downloads ~/Desktop -iname \"*MiiR*Template*\" 2>/dev/null)",
+      "Bash(cp \"/Users/eddy/Downloads/MiiR_Printer_Availability_Template_v6.xlsx\" \"/Users/eddy/Documents/miir-routing-assistant/MiiR_Printer_Availability_Template_v6.xlsx\" && echo \"copied\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:8501 -o /dev/null -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(/Users/eddy/Documents/miir-routing-assistant/.venv/bin/pip freeze *)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}
