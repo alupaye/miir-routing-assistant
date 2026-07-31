@@ -12,7 +12,28 @@
       "Bash(curl -s http://localhost:8501 -o /dev/null -w \"HTTP %{http_code}\\\\n\")",
       "Bash(/Users/eddy/Documents/miir-routing-assistant/.venv/bin/pip freeze *)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git -c user.name=\"Eddy\" -c user.email=\"eddy@miir.com\" commit -m \"Initial commit — MiiR Routing Assistant v2\")",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git config *)",
+      "Read(//Users/eddy/.ssh/**)",
+      "Read(//Users/eddy/**)",
+      "Read(//Users/eddy/Downloads/**)",
+      "Bash(file .venv/bin/python3*)",
+      "Bash(python3 -c \"import platform; print\\(platform.machine\\(\\)\\)\")",
+      "Bash(arch -arm64 .venv/bin/python3 -c \"import platform; print\\(platform.machine\\(\\)\\)\")",
+      "Bash(arch -arm64 .venv/bin/pip install --force-reinstall --no-cache-dir numpy pandas)",
+      "Bash(git checkout *)",
+      "Bash(.venv/bin/python3 -c \"import numpy, pandas; print\\('ok', numpy.__version__, pandas.__version__\\)\")",
+      "Bash(arch -arm64 .venv/bin/streamlit run app.py --server.headless true --server.port 8501)",
+      "Bash(disown)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8501)",
+      "Read(//tmp/**)",
+      "Bash(python3 -)",
+      "Bash(pkill -f \"streamlit run app.py\")"
     ]
   }
 }

@@ -81,6 +81,7 @@ def load_template(mtime: float) -> dict:
         name = str(r.get("Decorator", "")).strip()
         if name and name != "Decorator" and not name.startswith("["):
             decorators[name] = {
+                "status": _clean_str(r.get("Status"), "Active"),
                 "cost_tier": _clean_str(r.get("Cost Tier (Low/Mid/High)"), "—"),
                 "region": _clean_str(r.get("Region"), "—"),
                 "int_ext": _clean_str(r.get("Internal / External"), "—"),
@@ -104,7 +105,8 @@ def load_template(mtime: float) -> dict:
         c for c in cap_raw.columns
         if c not in ("Product", "Decoration Type", "Notes / Caveats", "Last Updated", "Updated By")
         and not str(c).startswith("Unnamed")
-        and c != "MPIX"  # MPIX never surfaces as a routing option
+        # Inactive/Backup only decorators (per DECORATORS.Status) never surface as routing options
+        and _is_active_status(decorators.get(c, {}).get("status", "Active"))
     ]
     capability = {}
     for _, r in cap_raw.iterrows():
@@ -133,6 +135,19 @@ def load_template(mtime: float) -> dict:
         "holidays": holidays,
         "mtime": mtime,
     }
+
+
+def _is_inactive_status(status: str) -> bool:
+    return status.strip().lower().startswith("inactive")
+
+
+def _is_backup_status(status: str) -> bool:
+    return status.strip().lower() == "backup only"
+
+
+def _is_active_status(status: str) -> bool:
+    """Active = not Inactive(*) and not Backup only. Governs matrix/routing eligibility."""
+    return not _is_inactive_status(status) and not _is_backup_status(status)
 
 
 def _clean_str(raw, default: str) -> str:
@@ -253,7 +268,7 @@ def deco_types_for_product(data: dict, product: str) -> list:
 
 
 def matrix_columns(data: dict, product: str, deco_types: list) -> list:
-    """Decorators (excl. MPIX) with at least one non-blank cell for this product."""
+    """Active decorators with at least one non-blank cell for this product."""
     cols = set()
     for deco in deco_types:
         caps = data["capability"].get((product, deco), {}).get("caps", {})
@@ -264,7 +279,7 @@ def matrix_columns(data: dict, product: str, deco_types: list) -> list:
 
 
 def product_has_any_capability(data: dict, product: str, deco_types: list) -> bool:
-    """True if any (non-MPIX) decorator is YES / YES* / LIMITED anywhere for this product."""
+    """True if any active decorator is YES / YES* / LIMITED anywhere for this product."""
     for deco in deco_types:
         caps = data["capability"].get((product, deco), {}).get("caps", {})
         if any(v in ANY_CAPABILITY_CAPS for v in caps.values()):
@@ -273,7 +288,7 @@ def product_has_any_capability(data: dict, product: str, deco_types: list) -> bo
 
 
 def eligible_decorators_for(data: dict, product: str, deco: str) -> list:
-    """YES / YES* decorators (excl. MPIX) for a given product+decoration combo."""
+    """YES / YES* active decorators for a given product+decoration combo."""
     entry = data["capability"].get((product, deco), {})
     caps = entry.get("caps", {})
     caveat = entry.get("caveat", "")
@@ -451,5 +466,21 @@ if deco_types:
 # ---- Footer ----
 mtime = TEMPLATE_FILE.stat().st_mtime
 last_updated = pd.Timestamp(mtime, unit="s").strftime("%Y-%m-%d %H:%M")
+
+active_count = 0
+excluded = []
+for dec_name, info in data["decorators"].items():
+    status = info.get("status", "Active")
+    if _is_inactive_status(status):
+        excluded.append(f"{dec_name} (Inactive)")
+    elif _is_backup_status(status):
+        excluded.append(f"{dec_name} (Backup only)")
+    else:
+        active_count += 1
+
 st.divider()
+status_line = f"Active decorators: {active_count}"
+if excluded:
+    status_line += f" • Excluding: {', '.join(excluded)}"
+st.caption(status_line)
 st.caption(f"Last template update: {last_updated} · Template: `{TEMPLATE_FILE.name}`")

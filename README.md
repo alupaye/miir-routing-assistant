@@ -59,7 +59,21 @@ The footer shows the file's last-modified timestamp so you always know which ver
 | UNTESTED | Not yet evaluated | Grey |
 | NO | Cannot decorate this combination | Red |
 
-MPIX is a backup-only decorator kept in the DECORATORS sheet for record-keeping, but it never appears in the app's matrix or eligible-decorator lists.
+## Decorator Status
+
+The DECORATORS sheet has a `Status` column (right after the Decorator name). The app reads it at load time to decide which decorators are eligible for routing:
+
+| Status | Meaning | Appears in matrix / eligible lists? |
+|---|---|---|
+| Active | Normal, routable decorator | Yes |
+| Inactive (any text starting with "Inactive", e.g. `Inactive (archived Jun 2026 — vendor closing)`) | No longer in the network | No |
+| Backup only | Kept for record-keeping (e.g. MPIX), not used for routing | No |
+
+Decorators that are Inactive or Backup only are filtered out entirely — they don't show up as a matrix column, in the eligible-decorators list, or as a recommendation for any Job. If no Active decorator is eligible for a product + decoration combo, the app shows the "No decorator in MiiR's network can handle this combination" message.
+
+To archive a decorator or bring one back, just edit the `Status` cell in the sheet — no code change needed.
+
+The app footer shows a live count of active decorators and names anything currently excluded, e.g. `Active decorators: 6 • Excluding: PDX LASER (Inactive), MPIX (Backup only)`.
 
 ## Zip-code proximity
 
