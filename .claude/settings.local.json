@@ -33,7 +33,8 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8501)",
       "Read(//tmp/**)",
       "Bash(python3 -)",
-      "Bash(pkill -f \"streamlit run app.py\")"
+      "Bash(pkill -f \"streamlit run app.py\")",
+      "Bash(gh auth *)"
     ]
   }
 }
